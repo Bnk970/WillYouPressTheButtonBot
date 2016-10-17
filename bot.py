@@ -1,5 +1,7 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import Updater, CommandHandler, Job, CallbackQueryHandler
+from bs4 import BeautifulSoup
+import requests
 import logging
 
 # Enable logging
@@ -21,15 +23,28 @@ def start(bot, update):
 def button(bot, update):
     query = update.callback_query
     if query.data == 'Ya':
-        bot.editMessageText(text="An error occurred while trying to load a question.\nError code: -1 (this feature does not exist yet!)\nTry again later or contact @BnK970 or @Lunatic_Yeti for help.",
+        source = requests.get("http://willyoupressthebutton.com").text
+        soup = BeautifulSoup(source)
+        cond = soup.find(id="cond")
+        res = soup.find(id="res")
+        keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = 'P'),
+                InlineKeyboardButton("I will not!", callback_data='N')]]
+        rep = InlineKeyboardMarkup(keyboard)
+        bot.editMessageText(text="%s\n\n*but*\n\n%s" % (cond,res),
                         chat_id=query.message.chat_id,
-                        message_id=query.message.message_id)
+                        message_id=query.message.message_id,
+                        parse_mode=ParseMode.MARKDOWN,
+                        reply_markup=rep)
     elif query.data == "Nay":
-        bot.editMessageText(text="Okay! Keep in mind that you can always send me /start to get a question!",
+        bot.editMessageText(text="M'kay",
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id)
-    else: #impossible...
-        bot.editMessageText(text="Hell! something went wrong!! Please forward this message to @BnK970 or @Lunatic_Yeti\n\n%s" % query,
+    elif query.data == "P":
+        bot.editMessageText(text="Work in progress...",
+                        chat_id=query.message.chat_id,
+                        message_id=query.message.message_id)
+    elif query.data == "N":
+        bot.editMessageText(text="Work in progress...",
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id)
 
