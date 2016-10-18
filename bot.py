@@ -43,6 +43,11 @@ def askme(bot, update):
                     parse_mode=ParseMode.MARKDOWN,
                     reply_markup=rep)
 
+def about(bot, update):
+    bot.editMessageText(text="This bot was created by @Bnk970 and @Lunatic_Yeti" ]),
+                        chat_id=query.message.chat_id,
+                        message_id=query.message.message_id) 
+
 def button(bot, update):
     query = update.callback_query
     if query.data == 'Ya':
@@ -88,6 +93,7 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("askme", askme))
+    dp.add_handler(CommandHandler("about", about))
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
     dp.add_handler(CommandHandler("help", start))
 
