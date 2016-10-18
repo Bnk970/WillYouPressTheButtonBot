@@ -24,7 +24,7 @@ def get_stats(answer):
     source = requests.get("http://willyoupressthebutton.com"+answer).text
     soup = BeautifulSoup(source, "html.parser")
     stats = soup.find(id="tytxt").find_all("b")
-    full = "*%s* people have pressed this button, while *%s*" % (stats[0].text, stats[1].text)
+    full = "*%s* people have pressed this button, while *%s* did not." % (stats[0].text, stats[1].text)
     return full
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
@@ -44,9 +44,9 @@ def askme(bot, update):
                     reply_markup=rep)
 
 def about(bot, update):
-    bot.editMessageText(text="This bot was created by @Bnk970 and @Lunatic_Yeti" ]),
-                        chat_id=query.message.chat_id,
-                        message_id=query.message.message_id) 
+    bot.editMessageText(text="This bot was created by @Bnk970 and @Lunatic_Yeti",
+                    chat_id=query.message.chat_id,
+                    message_id=query.message.message_id) 
 
 def button(bot, update):
     query = update.callback_query
