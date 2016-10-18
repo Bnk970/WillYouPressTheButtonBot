@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 timers = dict()
 
 def get_q():
-    source = requests.get("http://willyoupressthebutton.com")
+    source = requests.get("http://willyoupressthebutton.com").text
     soup = BeautifulSoup(source)
     cond = soup.find(id="cond")
     res = soup.find(id="res")
