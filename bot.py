@@ -13,9 +13,9 @@ timers = dict()
 
 def get_q():
     source = requests.get("http://willyoupressthebutton.com").text
-    soup = BeautifulSoup(source)
-    cond = soup.find(id="cond")
-    res = soup.find(id="res")
+    soup = BeautifulSoup(source, "html.parser")
+    cond = soup.find(id="cond").text
+    res = soup.find(id="res").text
     return [cond, res]
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
