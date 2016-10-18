@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 timers = dict()
 
 def get_q():
-    source = requests.get("http://willyoupressthebutton.com").text
+    source = requests.get("http://willyoupressthebutton.com")
     soup = BeautifulSoup(source)
     cond = soup.find(id="cond")
     res = soup.find(id="res")
@@ -24,6 +24,15 @@ def start(bot, update):
                 [InlineKeyboardButton("Maybe later", callback_data='Nay')]]
     rep = InlineKeyboardMarkup(keyboard)
     update.message.reply_text('Welcome to the WillYouPressTheButton.com bot!', reply_markup=rep)
+
+def askme(bot, update):
+    q = get_q()
+    keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = 'P'),
+            InlineKeyboardButton("I will not!", callback_data='N')]]
+    rep = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text("%s\n\n*but*\n\n%s" % (q[0], q[1]),
+                    parse_mode=ParseMode.MARKDOWN,
+                    reply_markup=rep)
 
 def button(bot, update):
     query = update.callback_query
@@ -62,6 +71,7 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("askme", askme))
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
     dp.add_handler(CommandHandler("help", start))
 
