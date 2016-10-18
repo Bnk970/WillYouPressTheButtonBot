@@ -39,14 +39,12 @@ def askme(bot, update):
     keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = q[2]),
             InlineKeyboardButton("I will not!", callback_data=q[3])]]
     rep = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("%s\n\n*but*\n\n%s" % (q[0], q[1]),
+    bot.sendMessage(update.message.chat_id, "%s\n\n*but*\n\n%s" % (q[0], q[1]),
                     parse_mode=ParseMode.MARKDOWN,
                     reply_markup=rep)
 
 def about(bot, update):
-    bot.editMessageText(text="This bot was created by @Bnk970 and @Lunatic_Yeti",
-                    chat_id=query.message.chat_id,
-                    message_id=query.message.message_id) 
+    update.message.reply_text('This bot was created by @Bnk970 and @Lunatic_Yeti')
 
 def button(bot, update):
     query = update.callback_query
@@ -65,18 +63,25 @@ def button(bot, update):
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id)
     elif query.data[-3:] == "yes":
+        keyboard = [[InlineKeyboardButton("send me another one!", callback_data = "askme")]]
+        rep = InlineKeyboardMarkup(keyboard)
         bot.editMessageText(text=query.message.text+"\n\nYou chose to press the button.\n"+get_stats(query.data),
                         chat_id=query.message.chat_id,
                         parse_mode=ParseMode.MARKDOWN,
-                        message_id=query.message.message_id)
+                        message_id=query.message.message_id,
+                        reply_markup=rep)
     elif query.data[-2:] == "no":
+        keyboard = [[InlineKeyboardButton("send me another one!", callback_data = "askme")]]
+        rep = InlineKeyboardMarkup(keyboard)
         bot.editMessageText(text=query.message.text+"\n\nYou were too afraid press the button.\n"+get_stats(query.data),
                         chat_id=query.message.chat_id,
                         parse_mode=ParseMode.MARKDOWN,
-                        message_id=query.message.message_id)
+                        message_id=query.message.message_id,
+                        reply_markup=rep)
+    elif query.data == "askme":
+        askme(bot, query)
     else:
-        a = query.data.lower()
-        bot.editMessageText(text="hello\n\n%s," % a,
+        bot.editMessageText(text="error!",
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id)
 
@@ -95,7 +100,6 @@ def main():
     dp.add_handler(CommandHandler("askme", askme))
     dp.add_handler(CommandHandler("about", about))
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
-    dp.add_handler(CommandHandler("help", start))
 
     # log all errors
     dp.add_error_handler(error)
