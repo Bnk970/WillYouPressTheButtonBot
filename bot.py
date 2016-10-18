@@ -16,7 +16,9 @@ def get_q():
     soup = BeautifulSoup(source, "html.parser")
     cond = soup.find(id="cond").text
     res = soup.find(id="res").text
-    return [cond, res]
+    yes = soup.find(id="yesbtn").get('href')[4:-3]
+    no = soup.find(id="nobtn").get('href')
+    return [cond, res, yes, no]
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
 def start(bot, update):
@@ -27,10 +29,10 @@ def start(bot, update):
 
 def askme(bot, update):
     q = get_q()
-    keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = 'P'),
-            InlineKeyboardButton("I will not!", callback_data='N')]]
+    keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = q[2]),
+            InlineKeyboardButton("I will not!", callback_data=q[3])]]
     rep = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("%s\n\n*but*\n\n%s" % (q[0], q[1]),
+    update.message.reply_text("%s\n%s\n*but*\n%s\n%s" % (q[0], q[2], q[3], q[1]),
                     parse_mode=ParseMode.MARKDOWN,
                     reply_markup=rep)
 
@@ -38,8 +40,8 @@ def button(bot, update):
     query = update.callback_query
     if query.data == 'Ya':
         q = get_q()
-        keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = 'P'),
-                InlineKeyboardButton("I will not!", callback_data='N')]]
+        keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = q[2]),
+                InlineKeyboardButton("I will not!", callback_data=q[3])]]
         rep = InlineKeyboardMarkup(keyboard)
         bot.editMessageText(text="%s\n\n*but*\n\n%s" % (q[0], q[1]),
                         chat_id=query.message.chat_id,
@@ -50,12 +52,17 @@ def button(bot, update):
         bot.editMessageText(text="M'kay",
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id)
-    elif query.data == "P":
+    elif query.data[-3:] == "yes":
         bot.editMessageText(text="Work in progress...",
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id)
-    elif query.data == "N":
+    elif query.data[-2:] == "no":
         bot.editMessageText(text="Work in progress...",
+                        chat_id=query.message.chat_id,
+                        message_id=query.message.message_id)
+    else:
+        a = query.data.lower()
+        bot.editMessageText(text="hello\n\n%s," % a,
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id)
 
