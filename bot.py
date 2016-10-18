@@ -11,7 +11,12 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 timers = dict()
 
-
+def get_q():
+    source = requests.get("http://willyoupressthebutton.com").text
+    soup = BeautifulSoup(source)
+    cond = soup.find(id="cond")
+    res = soup.find(id="res")
+    return [cond, res]
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
 def start(bot, update):
@@ -23,14 +28,11 @@ def start(bot, update):
 def button(bot, update):
     query = update.callback_query
     if query.data == 'Ya':
-        source = requests.get("http://willyoupressthebutton.com").text
-        soup = BeautifulSoup(source)
-        cond = soup.find(id="cond")
-        res = soup.find(id="res")
+        q = get_q()
         keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = 'P'),
                 InlineKeyboardButton("I will not!", callback_data='N')]]
         rep = InlineKeyboardMarkup(keyboard)
-        bot.editMessageText(text="%s\n\n*but*\n\n%s" % (cond,res),
+        bot.editMessageText(text="%s\n\n*but*\n\n%s" % (q[0], q[1]),
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id,
                         parse_mode=ParseMode.MARKDOWN,
