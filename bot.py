@@ -19,6 +19,13 @@ def get_q():
     yes = soup.find(id="yesbtn").get('href')[4:-3]
     no = soup.find(id="nobtn").get('href')
     return [cond, res, yes, no]
+
+def get_stats(answer):
+    source = requests.get("http://willyoupressthebutton.com"+answer).text
+    soup = BeautifulSoup(source, "html.parser")
+    stats = soup.find(id="tytxt").find_all("b")
+    full = "*%s* people have pressed this button, while *%s*" % (stats[0].text, stats[1].text)
+    return full
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
 def start(bot, update):
@@ -32,7 +39,7 @@ def askme(bot, update):
     keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = q[2]),
             InlineKeyboardButton("I will not!", callback_data=q[3])]]
     rep = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("%s\n%s\n*but*\n%s\n%s" % (q[0], q[2], q[3], q[1]),
+    update.message.reply_text("%s\n\n*but*\n\n%s" % (q[0], q[1]),
                     parse_mode=ParseMode.MARKDOWN,
                     reply_markup=rep)
 
@@ -53,12 +60,14 @@ def button(bot, update):
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id)
     elif query.data[-3:] == "yes":
-        bot.editMessageText(text="Work in progress...",
+        bot.editMessageText(text=query.message.text+"\n\nYou chose to press the button.\n"+get_stats(query.data),
                         chat_id=query.message.chat_id,
+                        parse_mode=ParseMode.MARKDOWN,
                         message_id=query.message.message_id)
     elif query.data[-2:] == "no":
-        bot.editMessageText(text="Work in progress...",
+        bot.editMessageText(text=query.message.text+"\n\nYou were too afraid press the button.\n"+get_stats(query.data),
                         chat_id=query.message.chat_id,
+                        parse_mode=ParseMode.MARKDOWN,
                         message_id=query.message.message_id)
     else:
         a = query.data.lower()
