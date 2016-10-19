@@ -11,6 +11,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 timers = dict()
 
+def file_get_contents(filename):
+    with open(filename) as f:
+        return f.read()
+    
 def get_q():
     source = requests.get("http://willyoupressthebutton.com").text
     soup = BeautifulSoup(source, "html.parser")
@@ -95,7 +99,7 @@ def error(bot, update, error):
 
 
 def main():
-    updater = Updater("240151502:AAE5R-gOhNZ9TOHyxvb7b-dCECpmjAltW4M")
+    updater = Updater(file_get_contents("token.ini"))
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
