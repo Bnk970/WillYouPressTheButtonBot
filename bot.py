@@ -43,6 +43,11 @@ def askme(bot, update):
                     parse_mode=ParseMode.MARKDOWN,
                     reply_markup=rep)
 
+def share(bot, update):
+    share_url = "https://telegram.me/share/url?url=Do%20you%20know%20the%20game%20WillYouPressTheButton.com?&text=Aparently%20@BnK970%20and%20@Lunatic_yeti%20created%20a%20bot%20for%20that%20game%21%21%0Acheck%20out%20@WillYouPressBot%21"
+    update.message.reply_text('Click [here](%s) to share the bot to your friends!' % share_url,
+                              parse_mode=ParseMode.MARKDOWN)
+
 def about(bot, update):
     update.message.reply_text('This bot was created by @Bnk970 and @Lunatic_Yeti')
 
@@ -98,6 +103,7 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("askme", askme))
+    dp.add_handler(CommandHandler("share", share))
     dp.add_handler(CommandHandler("about", about))
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
 
