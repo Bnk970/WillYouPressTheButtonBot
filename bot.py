@@ -65,7 +65,7 @@ def askme(bot, update, q_id=""):
 
 def share(bot, update):
     share_url = "https://telegram.me/share/url?url=Do%20you%20know%20the%20game%20WillYouPressTheButton.com?&text=Apperently%20@BnK970%20and%20@Lunatic_yeti%20created%20a%20bot%20for%20this%20game%21%21%0Acheck%20out%20@WillYouPressBot%21"
-    update.message.reply_text('Click [here](%s) to share the bot to your friends!' % share_url,
+    update.message.reply_text('Click [here](%s) to share the bot to your friends or [here](http://telegram.me/storebot?start=WillYouPressBot) to rate the bot at @StoreBot' % share_url,
                               parse_mode=ParseMode.MARKDOWN)
 
 def about(bot, update):
