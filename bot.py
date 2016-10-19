@@ -11,6 +11,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 timers = dict()
 
+# Global variables:
+# The format of the questions
+q_format = "%s\n\n*but*\n\n%s"
+
 def file_get_contents(filename):
     with open(filename) as f:
         return f.read()
@@ -22,9 +26,14 @@ def get_q():
     res = soup.find(id="res").text
     yes = soup.find(id="yesbtn").get('href')[4:-3]
     no = soup.find(id="nobtn").get('href')
-    return [cond, res, yes, no]
+    keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = yes),
+                InlineKeyboardButton("I will not!", callback_data=no)],
+                [InlineKeyboardButton("Share this question!", switch_inline_query=yes[:-4])]]
+    rep = InlineKeyboardMarkup(keyboard)
+    return [cond, res, rep]
 
-def get_stats(answer):
+def get_stats(bot, answer):
+    bot.sendMessage("100791225", answer)
     source = requests.get("http://willyoupressthebutton.com"+answer).text
     soup = BeautifulSoup(source, "html.parser")
     stats = soup.find(id="tytxt").find_all("b")
@@ -40,15 +49,12 @@ def start(bot, update):
 
 def askme(bot, update):
     q = get_q()
-    keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = q[2]),
-            InlineKeyboardButton("I will not!", callback_data=q[3])]]
-    rep = InlineKeyboardMarkup(keyboard)
-    bot.sendMessage(update.message.chat_id, "%s\n\n*but*\n\n%s" % (q[0], q[1]),
+    bot.sendMessage(update.message.chat_id, q_format % (q[0], q[1]),
                     parse_mode=ParseMode.MARKDOWN,
-                    reply_markup=rep)
+                    reply_markup=q[2])
 
 def share(bot, update):
-    share_url = "https://telegram.me/share/url?url=Do%20you%20know%20the%20game%20WillYouPressTheButton.com?&text=Aparently%20@BnK970%20and%20@Lunatic_yeti%20created%20a%20bot%20for%20that%20game%21%21%0Acheck%20out%20@WillYouPressBot%21"
+    share_url = "https://telegram.me/share/url?url=Do%20you%20know%20the%20game%20WillYouPressTheButton.com?&text=Apperently%20@BnK970%20and%20@Lunatic_yeti%20created%20a%20bot%20for%20this%20game%21%21%0Acheck%20out%20@WillYouPressBot%21"
     update.message.reply_text('Click [here](%s) to share the bot to your friends!' % share_url,
                               parse_mode=ParseMode.MARKDOWN)
 
@@ -59,14 +65,11 @@ def button(bot, update):
     query = update.callback_query
     if query.data == 'Ya':
         q = get_q()
-        keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = q[2]),
-                InlineKeyboardButton("I will not!", callback_data=q[3])]]
-        rep = InlineKeyboardMarkup(keyboard)
-        bot.editMessageText(text="%s\n\n*but*\n\n%s" % (q[0], q[1]),
+        bot.editMessageText(text=q_format % (q[0], q[1]),
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id,
                         parse_mode=ParseMode.MARKDOWN,
-                        reply_markup=rep)
+                        reply_markup=q[2])
     elif query.data == "Nay":
         bot.editMessageText(text="M'kay",
                         chat_id=query.message.chat_id,
@@ -74,7 +77,7 @@ def button(bot, update):
     elif query.data[-3:] == "yes":
         keyboard = [[InlineKeyboardButton("send me another one!", callback_data = "askme")]]
         rep = InlineKeyboardMarkup(keyboard)
-        bot.editMessageText(text=query.message.text+"\n\nYou chose to press the button.\n"+get_stats(query.data),
+        bot.editMessageText(text=query.message.text+"\n\nYou chose to press the button.\n"+get_stats(bot, query.data),
                         chat_id=query.message.chat_id,
                         parse_mode=ParseMode.MARKDOWN,
                         message_id=query.message.message_id,
@@ -82,7 +85,7 @@ def button(bot, update):
     elif query.data[-2:] == "no":
         keyboard = [[InlineKeyboardButton("Send me another one!", callback_data = "askme")]]
         rep = InlineKeyboardMarkup(keyboard)
-        bot.editMessageText(text=query.message.text+"\n\nYou didn't press the button.\n"+get_stats(query.data),
+        bot.editMessageText(text=query.message.text+"\n\nYou didn't press the button.\n"+get_stats(bot, query.data),
                         chat_id=query.message.chat_id,
                         parse_mode=ParseMode.MARKDOWN,
                         message_id=query.message.message_id,
