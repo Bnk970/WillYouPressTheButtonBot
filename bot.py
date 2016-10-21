@@ -24,10 +24,14 @@ def escape_markdown(text):
     return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
 def file_get_contents(filename):
-    with open(filename) as f:
+    with open(filename, "r") as f:
         return f.read()
     
 def get_q(q=""):
+    uses = str(int(float(file_get_contents("counters/uses.txt")))+1)
+    outf = open('counters/uses.txt','w')
+    outf.write(uses)
+    
     source = requests.get("http://willyoupressthebutton.com"+q).text
     soup = BeautifulSoup(source, "html.parser")
     cond = soup.find(id="cond").text
