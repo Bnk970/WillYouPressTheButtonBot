@@ -78,6 +78,9 @@ def about(bot, update):
 def cmd_help(bot, update):
     update.message.reply_text('You are presented with a red button. Two things will happen if you press the button - one good and one bad. Will you press the button? It is your choice. Millions of users worldwide!')
 
+def stats(bot, update):
+    update.message.reply_text("the bot was used %s times" % file_get_contents("counters/uses.txt"))
+
 def inlinequery (bot, update):
     query = update.inline_query.query
     q = get_q(query)
@@ -152,6 +155,7 @@ def main():
     dp.add_handler(CommandHandler("share", share))
     dp.add_handler(CommandHandler("about", about))
     dp.add_handler(CommandHandler("help", cmd_help))
+    dp.add_handler(CommandHandler("stats", stats))
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
 
     # on inline query
