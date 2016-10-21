@@ -2,6 +2,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Inli
 from telegram.ext import Updater, CommandHandler, Job, CallbackQueryHandler, InlineQueryHandler
 from bs4 import BeautifulSoup
 from uuid import uuid4
+from time import gmtime, strftime
 import requests
 import logging
 import re
@@ -81,7 +82,7 @@ def cmd_help(bot, update):
 def stats(bot, update):
     keyboard = [[InlineKeyboardButton("refresh stats", callback_data = "refresh_stats")]]
     rep = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("the bot was used %s times" % file_get_contents("counters/uses.txt"), reply_markup=rep)
+    update.message.reply_text(strftime("%H:%M:%S\n", gmtime())+"The bot was used %s times" % file_get_contents("counters/uses.txt"), reply_markup=rep)
 
 def inlinequery (bot, update):
     query = update.inline_query.query
@@ -139,7 +140,7 @@ def button(bot, update):
     elif query.data == "refresh_stats":
         keyboard = [[InlineKeyboardButton("refresh stats", callback_data = "refresh_stats")]]
         rep = InlineKeyboardMarkup(keyboard)
-        bot.editMessageText(text="the bot was used %s times" % file_get_contents("counters/uses.txt"),
+        bot.editMessageText(text=strftime("%H:%M:%S\n", gmtime())+"The bot was used %s times" % file_get_contents("counters/uses.txt"),
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id,
                         reply_markup=rep)
