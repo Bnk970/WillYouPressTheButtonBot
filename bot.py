@@ -89,19 +89,10 @@ def inlinequery (bot, update):
     q = get_q(query)
     results = list()
     if(query==""):
-        #q = get_q()
-        #results.append(InlineQueryResultArticle(id=uuid4(),
-        #                                    title="This is not working yet!",
-        #                                    input_message_content=InputTextMessageContent(
-        #                                        "This is not working yet!")))
-        #results.append(InlineQueryResultArticle(id=uuid4(),
-        #                                    title="Share a random message",
-        #                                    input_message_content=InputTextMessageContent(
-        #                                        q_format % (q[0], q[1]))))
         ttl = "Share a random question"
     else:
         ttl = "Share this question"
-    keyboard = [[InlineKeyboardButton("Answer the question!", url = 'https://telegram.me/WillYouPressBot?start='+q[4][:-3])]]
+    keyboard = [[InlineKeyboardButton("what would you do?", url = 'https://telegram.me/WillYouPressBot?start='+q[4][:-3])]]
     rep = InlineKeyboardMarkup(keyboard)
     results.append(InlineQueryResultArticle(id=uuid4(),
                     title=ttl,
