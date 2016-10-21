@@ -89,19 +89,26 @@ def inlinequery (bot, update):
     q = get_q(query)
     results = list()
     if(query==""):
-        results.append(InlineQueryResultArticle(id=uuid4(),
-                                            title="This is not working yet!",
-                                            input_message_content=InputTextMessageContent(
-                                                "This is not working yet!")))
+        #q = get_q()
+        #results.append(InlineQueryResultArticle(id=uuid4(),
+        #                                    title="This is not working yet!",
+        #                                    input_message_content=InputTextMessageContent(
+        #                                        "This is not working yet!")))
+        #results.append(InlineQueryResultArticle(id=uuid4(),
+        #                                    title="Share a random message",
+        #                                    input_message_content=InputTextMessageContent(
+        #                                        q_format % (q[0], q[1]))))
+        ttl = "Share a random question"
     else:
-        keyboard = [[InlineKeyboardButton("Answer the question!", url = 'https://telegram.me/WillYouPressBot?start='+q[4][:-3])]]
-        rep = InlineKeyboardMarkup(keyboard)
-        results.append(InlineQueryResultArticle(id=uuid4(),
-                                            title="Share this question!",
-                                            input_message_content=InputTextMessageContent(
-                                                "%s\n\n*%s\n\n*%s" % (escape_markdown(q[0]), escape_markdown("but"), escape_markdown(q[1])),
-                                                parse_mode=ParseMode.MARKDOWN),
-                                                reply_markup=rep))
+        ttl = "Share this question"
+    keyboard = [[InlineKeyboardButton("Answer the question!", url = 'https://telegram.me/WillYouPressBot?start='+q[4][:-3])]]
+    rep = InlineKeyboardMarkup(keyboard)
+    results.append(InlineQueryResultArticle(id=uuid4(),
+                    title=ttl,
+                    input_message_content=InputTextMessageContent(
+                                "%s\n\n*%s\n\n*%s" % (escape_markdown(q[0]), escape_markdown("but"), escape_markdown(q[1])),
+                                parse_mode=ParseMode.MARKDOWN),
+                                reply_markup=rep))
     update.inline_query.answer(results)
 
 def button(bot, update):
