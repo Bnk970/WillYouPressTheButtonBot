@@ -79,7 +79,9 @@ def cmd_help(bot, update):
     update.message.reply_text('You are presented with a red button. Two things will happen if you press the button - one good and one bad. Will you press the button? It is your choice. Millions of users worldwide!')
 
 def stats(bot, update):
-    update.message.reply_text("the bot was used %s times" % file_get_contents("counters/uses.txt"))
+    keyboard = [[InlineKeyboardButton("refresh stats", callback_data = "refresh_stats")]]
+    rep = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text("the bot was used %s times" % file_get_contents("counters/uses.txt"), reply_markup=rep)
 
 def inlinequery (bot, update):
     query = update.inline_query.query
@@ -134,6 +136,13 @@ def button(bot, update):
                         reply_markup=rep)
     elif query.data == "askme":
         askme(bot, query)
+    elif query.data == "refresh_stats":
+        keyboard = [[InlineKeyboardButton("refresh stats", callback_data = "refresh_stats")]]
+        rep = InlineKeyboardMarkup(keyboard)
+        bot.editMessageText(text="the bot was used %s times" % file_get_contents("counters/uses.txt"),
+                        chat_id=query.message.chat_id,
+                        message_id=query.message.message_id,
+                        reply_markup=rep)
     else:
         bot.editMessageText(text="error!",
                         chat_id=query.message.chat_id,
