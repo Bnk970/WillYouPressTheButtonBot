@@ -19,6 +19,11 @@ timers = dict()
 q_format = "%s\n\n*but*\n\n%s"
 
 # Helper functions
+def store_users(user_id):
+    ulist = file_get_contents("counters/users.txt")
+    if ulist.find(user_id) == -1:
+        with open("counters/users.txt", "a") as myfile:
+            myfile.write("\n"+user_id)
 def escape_markdown(text):
     """Helper function to escape telegram markup symbols"""
     escape_chars = '\*_`\['
@@ -54,6 +59,7 @@ def get_stats(bot, answer):
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
 def start(bot, update):
+    store_users(str(update.message.chat_id))
     if update.message.text=="/start":
         keyboard = [[InlineKeyboardButton("Give me a question!", callback_data = 'Ya')],
                     [InlineKeyboardButton("Maybe later", callback_data='Nay')]]
@@ -63,26 +69,31 @@ def start(bot, update):
         askme(bot, update, update.message.text[7:])
 
 def askme(bot, update, q_id=""):
+    store_users(str(update.message.chat_id))
     q = get_q(q_id)
     bot.sendMessage(update.message.chat_id, q_format % (q[0], q[1]),
                     parse_mode=ParseMode.MARKDOWN,
                     reply_markup=q[2])
 
 def share(bot, update):
+    store_users(str(update.message.chat_id))
     share_url = "https://telegram.me/share/url?url=Do%20you%20know%20the%20game%20WillYouPressTheButton.com?&text=Apperently%20@BnK970%20and%20@Lunatic_yeti%20created%20a%20bot%20for%20this%20game%21%21%0Acheck%20out%20@WillYouPressBot%21"
     update.message.reply_text('Click [here](%s) to share the bot to your friends or [here](http://telegram.me/storebot?start=WillYouPressBot) to rate the bot at @StoreBot' % share_url,
                               parse_mode=ParseMode.MARKDOWN)
 
 def about(bot, update):
+    store_users(str(update.message.chat_id))
     update.message.reply_text('This bot was created by @Bnk970 and @Lunatic_Yeti')
 
 def cmd_help(bot, update):
+    store_users(str(update.message.chat_id))
     update.message.reply_text('You are presented with a red button. Two things will happen if you press the button - one good and one bad. Will you press the button? It is your choice. Millions of users worldwide!')
 
 def stats(bot, update):
+    store_users(str(update.message.chat_id))
     keyboard = [[InlineKeyboardButton("refresh stats", callback_data = "refresh_stats")]]
     rep = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text(strftime("%H:%M:%S\n", gmtime())+"The bot was used %s times" % file_get_contents("counters/uses.txt"), reply_markup=rep)
+    update.message.reply_text(strftime("%H:%M:%S\n", gmtime())+"The bot was used %s times\n%s Telegram users are using the bot" % (file_get_contents("counters/uses.txt"), sum(1 for line in open('counters/users.txt', "r"))), reply_markup=rep)
 
 def inlinequery (bot, update):
     query = update.inline_query.query
@@ -104,6 +115,7 @@ def inlinequery (bot, update):
 
 def button(bot, update):
     query = update.callback_query
+    store_users(str(query.message.chat_id))
     if query.data == 'Ya':
         q = get_q()
         bot.editMessageText(text=q_format % (q[0], q[1]),
@@ -138,7 +150,7 @@ def button(bot, update):
     elif query.data == "refresh_stats":
         keyboard = [[InlineKeyboardButton("refresh stats", callback_data = "refresh_stats")]]
         rep = InlineKeyboardMarkup(keyboard)
-        bot.editMessageText(text=strftime("%H:%M:%S\n", gmtime())+"The bot was used %s times" % file_get_contents("counters/uses.txt"),
+        bot.editMessageText(text=strftime(strftime("%H:%M:%S\n", gmtime())+"The bot was used %s times\n%s Telegram users are using the bot" % (file_get_contents("counters/uses.txt"), sum(1 for line in open('counters/users.txt', "r")))),
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id,
                         reply_markup=rep)
