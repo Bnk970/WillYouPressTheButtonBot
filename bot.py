@@ -40,9 +40,9 @@ def get_q(q=""):
     
     source = requests.get("http://willyoupressthebutton.com"+q).text
     soup = BeautifulSoup(source, "html.parser")
-    cond = soup.find(id="cond").text
-    res = soup.find(id="res").text
-    yes = soup.find(id="yesbtn").get('href')[4:-3]
+    cond = soup.find(id="cond").text[10:-6]
+    res = soup.find(id="res").text[10:-6]
+    yes = soup.find(id="yesbtn").get('href')
     no = soup.find(id="nobtn").get('href')
     keyboard = [[InlineKeyboardButton(u"\U0001f534", callback_data = yes),
                 InlineKeyboardButton("I will not!", callback_data=no)],
@@ -53,8 +53,9 @@ def get_q(q=""):
 def get_stats(bot, answer):
     source = requests.get("http://willyoupressthebutton.com"+answer).text
     soup = BeautifulSoup(source, "html.parser")
-    stats = soup.find(id="tytxt").find_all("b")
-    full = "*%s* people have pressed this button, while *%s* haven't" % (stats[0].text, stats[1].text)
+    pressed = soup.find(class_="peoplePressed").text
+    didntPress = soup.find(class_="peopleDidntpress").text
+    full = "*%s* people have pressed this button, while *%s* haven't" % (pressed, didntPress)
     return full
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
@@ -64,7 +65,7 @@ def start(bot, update):
         keyboard = [[InlineKeyboardButton("Give me a question!", callback_data = 'Ya')],
                     [InlineKeyboardButton("Maybe later", callback_data='Nay')]]
         rep = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text('Welcome to the WillYouPressTheButton.com bot!', reply_markup=rep)
+        update.message.reply_text('Welcome to the WillYouPressTheButton.com bot!\nUse /help if you don\'t understand how to use the bot.', reply_markup=rep)
     else:
         askme(bot, update, update.message.text[7:])
 
@@ -155,7 +156,7 @@ def button(bot, update):
                         message_id=query.message.message_id,
                         reply_markup=rep)
     else:
-        bot.editMessageText(text="error!",
+        bot.editMessageText(text="error: "+query.data,
                         chat_id=query.message.chat_id,
                         message_id=query.message.message_id)
 
